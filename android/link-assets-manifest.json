@@ -1,0 +1,29 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/YaldeviColombo-Bold.ttf",
+      "sha1": "4f66fb8db25668e4e5c38415a2af1aea767a82d1"
+    },
+    {
+      "path": "assets/fonts/YaldeviColombo-ExtraLight.ttf",
+      "sha1": "dfb46033fbecf26e081b7578ca0b671025399bcf"
+    },
+    {
+      "path": "assets/fonts/YaldeviColombo-Light.ttf",
+      "sha1": "51755a5df82670e1140b32edf38edbf03a423e66"
+    },
+    {
+      "path": "assets/fonts/YaldeviColombo-Medium.ttf",
+      "sha1": "f9b4d77bca445fe465fdac33cc8bb4f8fca8b957"
+    },
+    {
+      "path": "assets/fonts/YaldeviColombo-Regular.ttf",
+      "sha1": "3027c4cd92a1256228e69c23ba3f055e6798b870"
+    },
+    {
+      "path": "assets/fonts/YaldeviColombo-SemiBold.ttf",
+      "sha1": "68eaec265f8def32407bf9555a6b09e35d44a2d9"
+    }
+  ]
+}
