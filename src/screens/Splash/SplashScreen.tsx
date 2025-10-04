@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 const SplashScreen = ({ navigation }: any) => {
     React.useEffect(() => {
         setTimeout(() => {
-            navigation.replace('Login');
+            navigation.replace('OnboardingPages');
         }, 2000);
     }, [navigation]);
 
@@ -19,7 +19,7 @@ const SplashScreen = ({ navigation }: any) => {
         >
             <View style={spleshStyles.container}>
                 <Text style={spleshStyles.mainText}>Day Track</Text>
-                <Text style={spleshStyles.subText}>Kepp your life on track</Text>
+                <Text style={spleshStyles.subText}>Keep your life on track</Text>
             </View>
         </LinearGradient>
     );
@@ -47,6 +47,5 @@ const spleshStyles = StyleSheet.create({
         color: '#000',
         marginTop: 8,
     }
-
 })
 export default SplashScreen
