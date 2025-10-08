@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     greenOverlay: {
         width: 105,
         height: 46,
-        backgroundColor: 'rgba(108, 99, 255, 0.15)',
+        backgroundColor: 'rgba(25, 16, 189, 0.15)',
         borderRadius: 23,
         position: 'absolute',
         left: 0,

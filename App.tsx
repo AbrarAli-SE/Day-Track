@@ -17,14 +17,16 @@ export default function App() {
           <Stack.Navigator
             screenOptions={{
               headerShown: false,
-              animation: 'slide_from_right'
             }}
             initialRouteName="Splash"
           >
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="OnboardingPages" component={OnboardingPages} />
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="MainScreen" component={TabsNavigator} />
+            <Stack.Screen name="MainScreen" component={TabsNavigator} options={{
+              animation: 'fade',
+            }} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
