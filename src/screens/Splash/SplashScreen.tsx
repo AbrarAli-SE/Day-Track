@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 const SplashScreen = ({ navigation }: any) => {
     React.useEffect(() => {
         setTimeout(() => {
-            navigation.replace('OnboardingPages');
+            navigation.replace('MainScreen');
         }, 2000);
     }, [navigation]);
 

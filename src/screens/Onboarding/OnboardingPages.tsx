@@ -89,7 +89,7 @@ export default function OnboardingPages({ navigation }: any) {
 
   const handleNext = () => {
     if (currentPage === 3) {
-      navigation.navigate('Login');
+      navigation.navigate('MainScreen');
     } else {
       changePage(currentPage + 1);
     }
@@ -107,7 +107,7 @@ export default function OnboardingPages({ navigation }: any) {
         if (currentPage < 3) {
           changePage(currentPage + 1);
         } else {
-          navigation.navigate('Login');
+          navigation.navigate('MainScreen');
         }
       } else if (event.translationX > 50) {
         handleBack();
@@ -179,7 +179,7 @@ export default function OnboardingPages({ navigation }: any) {
               currentPage === 3 && onboardingStyles.bottomRowEnd
             ]}>
               {currentPage < 3 && (
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <TouchableOpacity onPress={() => navigation.navigate('MainScreen')}>
                   <Text style={onboardingStyles.skip}>Skip</Text>
                 </TouchableOpacity>
               )}
