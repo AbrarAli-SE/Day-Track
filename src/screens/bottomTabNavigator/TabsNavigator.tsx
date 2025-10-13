@@ -64,7 +64,7 @@ const TabButton: React.FC<TabButtonProps> = ({
                     source={iconSource}
                     style={[
                         styles.icon,
-                        { tintColor: focused ? color : '#9CA3AF' }
+                        { tintColor: focused ? color : '#af9c9eff' }
                     ]}
                     resizeMode="contain"
                 />
@@ -201,10 +201,12 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 20,
         position: 'relative',
+        marginTop: -25,
+        paddingTop: 0,
     },
     overlayContainer: {
         position: 'absolute',
-        top: 0,
+        top: 0, 
         left: 7,
         right: 7,
         bottom: 0,
@@ -213,6 +215,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
         overflow: 'hidden',
+        backgroundColor: '#F7FEFF',
     },
     greenOverlay: {
         width: 105,

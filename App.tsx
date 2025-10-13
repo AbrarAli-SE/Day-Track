@@ -18,7 +18,7 @@ export default function App() {
             screenOptions={{
               headerShown: false,
             }}
-            initialRouteName="Splash"
+            initialRouteName="MainScreen"
           >
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="OnboardingPages" component={OnboardingPages} />
