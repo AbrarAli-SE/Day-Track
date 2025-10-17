@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Image, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from './Home';
-import Expense from './Expense';
-import Todo from './Todo';
-
+import Home from '../screens/bottomTabs/Home';
+import Expense from '../screens/bottomTabs/Expense';
+import Todo from '../screens/bottomTabs/Todo';
 const BottomTab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
@@ -130,18 +129,18 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 
                     if (route.name === 'Home') {
                         iconSource = isFocused
-                            ? require('../../../assets/images/bottomTabIcons/home-active.png')
-                            : require('../../../assets/images/bottomTabIcons/home.png');
+                            ? require('./../../assets/images/bottomTabIcons/home-active.png')
+                            : require('./../../assets/images/bottomTabIcons/home.png');
                         label = 'Home';
                     } else if (route.name === 'Expense') {
                         iconSource = isFocused
-                            ? require('../../../assets/images/bottomTabIcons/expense-active.png')
-                            : require('../../../assets/images/bottomTabIcons/expense.png');
+                            ? require('./../../assets/images/bottomTabIcons/expense-active.png')
+                            : require('./../../assets/images/bottomTabIcons/expense.png');
                         label = 'Expense';
                     } else if (route.name === 'Todo') {
                         iconSource = isFocused
-                            ? require('../../../assets/images/bottomTabIcons/todo-active.png')
-                            : require('../../../assets/images/bottomTabIcons/todo.png');
+                            ? require('./../../assets/images/bottomTabIcons/todo-active.png')
+                            : require('./../../assets/images/bottomTabIcons/todo.png');
                         label = 'Todo';
                     }
 
@@ -174,7 +173,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     );
 };
 
-export default function TabsNavigator() {
+export default function BottomTabsNavigator() {
     return (
         <BottomTab.Navigator
             tabBar={(props) => <CustomTabBar {...props} />}

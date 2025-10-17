@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Colors from '../../constants/colors'
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import LinearGradient from 'react-native-linear-gradient';
 import typography from '../../constants/typography';
 import { TransactionCard, TransactionData } from '../../components/TransactionCard';
