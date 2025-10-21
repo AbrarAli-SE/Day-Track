@@ -9,11 +9,32 @@ import {
   Image,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation, NavigationProp, CompositeNavigationProp } from '@react-navigation/native'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Colors from '../../constants/colors'
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import LinearGradient from 'react-native-linear-gradient';
 import typography from '../../constants/typography';
 import { TransactionCard, TransactionData } from '../../components/TransactionCard';
+
+type RootStackParamList = {
+  Splash: undefined;
+  OnboardingPages: undefined;
+  LoginScreen: undefined;
+  MainScreen: undefined;
+};
+
+type BottomTabParamList = {
+  Home: undefined;
+  Expense: undefined;
+  Todo: undefined;
+};
+
+type ExpenseScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<BottomTabParamList, 'Expense'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 const SAMPLE_TX: TransactionData[] = [
   {
@@ -94,8 +115,8 @@ const SAMPLE_TX: TransactionData[] = [
     notes: 'Electronics purchase',
   },
 ]
-
 export default function Expense() {
+  const navigation = useNavigation<ExpenseScreenNavigationProp>();
   const [isBalanceVisible, setIsBalanceVisible] = React.useState(true);
 
   const handleTransactionPress = (id: string) => {
@@ -108,7 +129,8 @@ export default function Expense() {
         <View style={styles.header}>
           <View style={styles.profile}>
 
-            <TouchableOpacity style={styles.avatar}>
+            <TouchableOpacity style={styles.avatar}
+            onPress={() => navigation.navigate('LoginScreen')}>
               <Image
                 source={require('../../../assets/pic.png')}
                 style={styles.avatarImage}
