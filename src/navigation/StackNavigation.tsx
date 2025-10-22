@@ -7,6 +7,7 @@ import BottomTabsNavigator from './BottomTabsNavigation';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import ForgetPasswordScreen from '../screens/auth/ForgetPasswordScreen';
+import ComingSoonScreen from '../screens/ComingSoonScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,8 @@ export default function StackNavigator() {
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="ForgetPasswordScreen" component={ForgetPasswordScreen} />
             <Stack.Screen name="MainScreen" component={BottomTabsNavigator} />
+            <Stack.Screen name="ComingSoon" component={ComingSoonScreen} />
+            
             {/* <Stack.Screen name="Main" component={AppDrawer} /> */}
         </Stack.Navigator>
     );

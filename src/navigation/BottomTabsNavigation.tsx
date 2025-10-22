@@ -1,50 +1,48 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../screens/bottomTabs/Home';
 import Expense from '../screens/bottomTabs/Expense';
 import Todo from '../screens/bottomTabs/Todo';
+
 const BottomTab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
+// Simple, professional color
+const ACTIVE_COLOR = '#000000';
+const INACTIVE_COLOR = 'rgba(0, 0, 0, 0.35)';
+const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.08)';
+
 type TabButtonProps = {
     focused: boolean;
-    iconSource: any;
+    iconName: string;
     label: string;
-    color: string;
     onPress: () => void;
 };
 
 const TabButton: React.FC<TabButtonProps> = ({
     focused,
-    iconSource,
+    iconName,
     label,
-    color,
     onPress,
 }) => {
-    const scaleAnim = useRef(new Animated.Value(focused ? 1 : 0.85)).current;
+    const scaleAnim = useRef(new Animated.Value(focused ? 1 : 0.92)).current;
     const labelOpacity = useRef(new Animated.Value(focused ? 1 : 0)).current;
-    const labelWidth = useRef(new Animated.Value(focused ? 1 : 0)).current;
 
     useEffect(() => {
         Animated.parallel([
             Animated.spring(scaleAnim, {
-                toValue: focused ? 1 : 0.85,
-                friction: 6,
-                tension: 40,
+                toValue: focused ? 1 : 0.92,
+                friction: 7,
+                tension: 60,
                 useNativeDriver: true,
             }),
             Animated.timing(labelOpacity, {
                 toValue: focused ? 1 : 0,
-                duration: 250,
+                duration: 200,
                 useNativeDriver: true,
             }),
-            Animated.spring(labelWidth, {
-                toValue: focused ? 1 : 0,
-                friction: 7,
-                tension: 50,
-                useNativeDriver: true,
-            })
         ]).start();
     }, [focused]);
 
@@ -55,37 +53,31 @@ const TabButton: React.FC<TabButtonProps> = ({
             style={styles.tabButton}
         >
             <Animated.View
-                style={{
-                    transform: [{ scale: scaleAnim }],
-                }}
+                style={[
+                    styles.tabContent,
+                    {
+                        transform: [{ scale: scaleAnim }],
+                    }
+                ]}
             >
-                <Image
-                    source={iconSource}
-                    style={[
-                        styles.icon,
-                        { tintColor: focused ? color : '#af9c9eff' }
-                    ]}
-                    resizeMode="contain"
+                <Ionicons
+                    name={iconName}
+                    size={22}
+                    color={focused ? ACTIVE_COLOR : INACTIVE_COLOR}
                 />
-            </Animated.View>
-            {focused && (
-                <Animated.View
-                    style={{
-                        opacity: labelOpacity,
-                        transform: [{ scaleX: labelWidth }],
-                        transformOrigin: 'left center',
-                        overflow: 'hidden',
-                        marginLeft: 8,
-                    }}
-                >
-                    <Text
-                        style={[styles.activeLabel, { color }]}
+
+                {focused && (
+                    <Animated.Text
+                        style={[
+                            styles.activeLabel,
+                            { opacity: labelOpacity }
+                        ]}
                         numberOfLines={1}
                     >
                         {label}
-                    </Text>
-                </Animated.View>
-            )}
+                    </Animated.Text>
+                )}
+            </Animated.View>
         </TouchableOpacity>
     );
 };
@@ -95,52 +87,45 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const currentIndex = state.index;
 
     useEffect(() => {
-        const screenWidth = width;
-        const tabWidth = screenWidth / 3;
-        const overlayWidth = 120;
+        const tabWidth = width / 3;
+        const overlayWidth = 100;
         const targetPosition = currentIndex * tabWidth + (tabWidth - overlayWidth) / 2;
 
         Animated.spring(overlayPosition, {
             toValue: targetPosition,
-            friction: 6,
-            tension: 40,
+            friction: 8,
+            tension: 60,
             useNativeDriver: true,
         }).start();
     }, [currentIndex]);
 
     return (
         <View style={styles.tabBarContainer}>
-            <View style={styles.overlayContainer}>
-                <Animated.View
-                    style={[
-                        styles.greenOverlay,
-                        {
-                            transform: [{ translateX: overlayPosition }]
-                        }
-                    ]}
-                />
-            </View>
+            {/* Simple Overlay */}
+            <Animated.View
+                style={[
+                    styles.activeOverlay,
+                    {
+                        transform: [{ translateX: overlayPosition }]
+                    }
+                ]}
+            />
 
+            {/* Tab Buttons */}
             <View style={styles.tabsWrapper}>
                 {state.routes.map((route: any, index: number) => {
                     const isFocused = state.index === index;
-                    let iconSource: any;
+                    let iconName: string = '';
                     let label: string = '';
 
                     if (route.name === 'Home') {
-                        iconSource = isFocused
-                            ? require('./../../assets/images/bottomTabIcons/home-active.png')
-                            : require('./../../assets/images/bottomTabIcons/home.png');
+                        iconName = isFocused ? 'home' : 'home-outline';
                         label = 'Home';
                     } else if (route.name === 'Expense') {
-                        iconSource = isFocused
-                            ? require('./../../assets/images/bottomTabIcons/expense-active.png')
-                            : require('./../../assets/images/bottomTabIcons/expense.png');
+                        iconName = isFocused ? 'wallet' : 'wallet-outline';
                         label = 'Expense';
                     } else if (route.name === 'Todo') {
-                        iconSource = isFocused
-                            ? require('./../../assets/images/bottomTabIcons/todo-active.png')
-                            : require('./../../assets/images/bottomTabIcons/todo.png');
+                        iconName = isFocused ? 'checkbox' : 'checkbox-outline';
                         label = 'Todo';
                     }
 
@@ -160,9 +145,8 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                         <View key={route.key} style={styles.tabContainer}>
                             <TabButton
                                 focused={isFocused}
-                                iconSource={iconSource}
+                                iconName={iconName}
                                 label={label}
-                                color="#6C63FF"
                                 onPress={onPress}
                             />
                         </View>
@@ -192,65 +176,65 @@ const styles = StyleSheet.create({
     tabBarContainer: {
         height: 70,
         backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 20,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 16,
+        marginTop: -20,
         position: 'relative',
-        marginTop: -25,
-        paddingTop: 0,
+        paddingTop: 8,
+        paddingBottom: 8,
     },
-    overlayContainer: {
+
+    activeOverlay: {
         position: 'absolute',
-        top: 0, 
-        left: 7,
-        right: 7,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
-        overflow: 'hidden',
-        backgroundColor: '#F7FEFF',
-    },
-    greenOverlay: {
-        width: 105,
-        height: 46,
-        backgroundColor: 'rgba(25, 16, 189, 0.15)',
-        borderRadius: 23,
-        position: 'absolute',
+        top: 10,
         left: 0,
-        top: 12,
+        width: 100,
+        height: 50,
+        backgroundColor: OVERLAY_COLOR,
+        borderRadius: 12,
+        zIndex: 1,
     },
+
     tabsWrapper: {
         flexDirection: 'row',
         height: '100%',
         alignItems: 'center',
         zIndex: 10,
+        paddingHorizontal: 8,
     },
+
     tabContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     tabButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+
+    tabContent: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 46,
-        paddingHorizontal: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        gap: 6,
     },
-    icon: {
-        width: 22,
-        height: 22,
-    },
+
     activeLabel: {
         fontSize: 14,
-        fontWeight: '700',
-        textAlign: 'left',
-        letterSpacing: 0.3,
+        fontWeight: '600',
+        fontFamily: 'YaldeviColombo-SemiBold',
+        color: ACTIVE_COLOR,
+        letterSpacing: 0.2,
     },
 });
