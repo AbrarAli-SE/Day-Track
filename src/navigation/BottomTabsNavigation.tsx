@@ -164,6 +164,7 @@ export default function BottomTabsNavigator() {
             screenOptions={{
                 headerShown: false,
             }}
+            initialRouteName='Expense'
         >
             <BottomTab.Screen name="Home" component={Home} />
             <BottomTab.Screen name="Expense" component={Expense} />

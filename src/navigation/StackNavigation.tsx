@@ -9,6 +9,7 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import ForgetPasswordScreen from '../screens/auth/ForgetPasswordScreen';
 import ComingSoonScreen from '../screens/ComingSoonScreen';
+import NotificationsScreen from '../screens/bottomTabs/NotificationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ export default function StackNavigator() {
                 <Stack.Screen name="ForgetPasswordScreen" component={ForgetPasswordScreen} />
                 <Stack.Screen name="MainScreen" component={BottomTabsNavigator} />
                 <Stack.Screen name="ComingSoon" component={ComingSoonScreen} />
+                <Stack.Screen name="Notifications" component={NotificationsScreen} />
             </Stack.Navigator>
 
             {/* Drawer overlays everything */}
