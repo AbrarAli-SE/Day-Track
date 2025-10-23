@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TransactionCard, TransactionData } from '../../components';
 import AnimatedSearchBar from '../../components/AnimatedSearchBar';
 import { expenseStyles } from '../../styles/expense/expenseStyles';
+import { useDrawer } from '../../navigation/DrawerContext';
 
 type RootStackParamList = {
   Splash: undefined;
@@ -104,7 +105,7 @@ export default function ExpenseScreen() {
   const [selectedTimeline, setSelectedTimeline] = useState<'1day' | '7days' | 'month' | 'custom'>('7days');
   const [searchResults, setSearchResults] = useState<TransactionData[]>([]);
   const scrollY = useRef(new Animated.Value(0)).current;
-
+  const { openDrawer } = useDrawer();
   const handleTransactionPress = (id: string) => {
     console.log('Transaction pressed:', id);
   };
@@ -122,7 +123,6 @@ export default function ExpenseScreen() {
       return;
     }
 
-    // Filter transactions based on search text
     const filtered = SAMPLE_TX.filter((transaction) =>
       transaction.title.toLowerCase().includes(text.toLowerCase()) ||
       transaction.category?.toLowerCase().includes(text.toLowerCase()) ||
@@ -165,7 +165,7 @@ export default function ExpenseScreen() {
           <View style={expenseStyles.profile}>
             <TouchableOpacity
               style={expenseStyles.avatarContainer}
-              onPress={() => navigation.navigate('LoginScreen')}
+              onPress={openDrawer}
               activeOpacity={0.8}
             >
               <Image
