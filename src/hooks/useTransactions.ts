@@ -104,24 +104,31 @@ export function useTransactions(): UseTransactionsReturn {
         if (!isAuthenticated) {
             setTransactions([]);
             setIsLoading(false);
+            console.log('❌ Not authenticated, skipping subscription');
             return;
         }
 
+        console.log('🔔 Setting up real-time subscription...');
         setIsLoading(true);
         setError(null);
 
         const unsubscribe = transactionService.subscribeToTransactions(
             (fetchedTransactions) => {
+                console.log('📲 Subscription callback triggered with', fetchedTransactions.length, 'transactions');
                 setTransactions(fetchedTransactions);
                 setIsLoading(false);
             },
             (err) => {
+                console.error('❌ Subscription error:', err.message);
                 setError(err.message);
                 setIsLoading(false);
             }
         );
 
-        return unsubscribe;
+        return () => {
+            console.log('🔕 Unsubscribing from real-time updates');
+            unsubscribe();
+        };
     }, [isAuthenticated]);
 
     // Calculate stats from all transactions
@@ -314,7 +321,7 @@ export function useTransactions(): UseTransactionsReturn {
                 console.log('📥 Loaded transactions from Firestore');
             } else {
                 // Load from offline storage
-                const offlineTransactions = await offlineStorageService.getAllTransactions();
+                const offlineTransactions = await offlineStorageService.getAllOfflineTransactions();
                 setTransactions(offlineTransactions);
                 console.log('💾 Loaded transactions from offline storage');
             }

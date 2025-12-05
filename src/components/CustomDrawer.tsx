@@ -199,12 +199,23 @@ export default function CustomDrawer() {
             
             if (result.total === 0) {
                 Alert.alert('Up to Date', 'All data is already synced!');
+            } else if (result.failed === result.total) {
+                // All items failed
+                Alert.alert(
+                    'Sync Failed',
+                    `Failed to sync ${result.failed} item${result.failed > 1 ? 's' : ''}. Please check your internet connection and try again.`
+                );
+            } else if (result.failed > 0) {
+                // Partial success
+                Alert.alert(
+                    'Partial Sync',
+                    `Successfully synced ${result.success} out of ${result.total} items.\n${result.failed} item${result.failed > 1 ? 's' : ''} failed to sync.`
+                );
             } else {
+                // Complete success
                 Alert.alert(
                     'Sync Complete',
-                    `Successfully synced ${result.success} out of ${result.total} items.${
-                        result.failed > 0 ? `\n${result.failed} items failed.` : ''
-                    }`
+                    `Successfully synced ${result.success} item${result.success > 1 ? 's' : ''}!`
                 );
             }
 
