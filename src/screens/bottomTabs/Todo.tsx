@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import TaskCard from '../../components/TaskCard';
 import { todoStyles } from '../../styles/todo/todoStyles';
 import { useDrawer } from '../../navigation/DrawerContext';
+import auth from '@react-native-firebase/auth';
 
 // Sample Data
 const TASKS = [
@@ -48,7 +49,7 @@ export default function TodoScreen() {
   const [selectedDate, setSelectedDate] = useState(20);
   const [taskMenuVisible, setTaskMenuVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
+  const [user, setUser] = useState<any>(null);
   const completedToday = TASKS.filter(t => t.done).length;
   const totalToday = TASKS.length;
   const progressPercentage = Math.round((completedToday / totalToday) * 100);
@@ -56,6 +57,26 @@ export default function TodoScreen() {
   const handleTaskMenu = (taskId: string) => {
     setSelectedTaskId(taskId);
     setTaskMenuVisible(true);
+  };
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      console.log('👤 Todo Screen - Auth State:', currentUser ? currentUser.email : 'Guest');
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const getUserName = () => {
+    if (!user) return 'Guest User';
+    return user.displayName || user.email?.split('@')[0] || 'User';
+  };
+
+  const getUserPhoto = () => {
+    if (user && user.photoURL) {
+      return { uri: user.photoURL };
+    }
+    return require('../../../assets/pic.png'); // Default image
   };
 
   const closeTaskMenu = () => {
@@ -82,14 +103,17 @@ export default function TodoScreen() {
       <View style={todoStyles.header}>
         <TouchableOpacity onPress={openDrawer} activeOpacity={0.7}>
           <Image
-            source={require('../../../assets/pic.png')}
+            source={getUserPhoto()}
             style={todoStyles.avatar}
           />
         </TouchableOpacity>
 
+
         <View style={todoStyles.headerCenter}>
           <Text style={todoStyles.headerDate}>Wednesday, Dec 20</Text>
-          <Text style={todoStyles.headerGreeting}>Let's be productive! 🚀</Text>
+          <Text style={todoStyles.headerGreeting}>
+            {user ? `Let's be productive, ${getUserName()}! 🚀` : "Let's be productive! 🚀"}
+          </Text>
         </View>
 
         <TouchableOpacity

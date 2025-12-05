@@ -5,7 +5,6 @@ import typography from '../constants/typography';
 const { width, height } = Dimensions.get('window');
 
 export const searchBarStyles = StyleSheet.create({
-    // Collapsed Button
     collapsedButton: {
         width: 40,
         height: 40,
@@ -20,7 +19,6 @@ export const searchBarStyles = StyleSheet.create({
         elevation: 2,
     },
 
-    // Full-Screen Modal
     modalOverlay: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -35,7 +33,6 @@ export const searchBarStyles = StyleSheet.create({
         backgroundColor: Colors.background || '#F7FEFF',
     },
 
-    // Search Header
     searchHeader: {
         flexDirection: 'row',
         alignItems: 'center',

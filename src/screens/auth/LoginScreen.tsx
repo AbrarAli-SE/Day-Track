@@ -204,20 +204,14 @@ export default function LoginScreen() {
     }
   };
 
+
   const handleAlertClose = () => {
     setAlertVisible(false);
 
-    // If it was a success alert (login successful), navigate to main app
     if (alertType === 'success' && loginSuccessRef.current) {
       loginSuccessRef.current = false;
 
-      // Navigate to main app (replace the entire stack)
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'MainScreen' }],
-        })
-      );
+      navigation.goBack();
     }
   };
 

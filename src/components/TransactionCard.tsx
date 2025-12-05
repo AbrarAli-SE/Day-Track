@@ -12,7 +12,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { transactionCardStyles } from '../styles/expense/transactionCardStyles';
 import Colors from '../constants/colors';
 
-// Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
         UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -37,6 +36,8 @@ export interface TransactionData {
 interface TransactionCardProps {
     data: TransactionData;
     onPress?: (id: string) => void;
+    onEdit?: (id: string) => void;
+    onDelete?: (id: string) => void;
     style?: any;
 }
 
@@ -83,7 +84,7 @@ export const TransactionCard: React.FC<TransactionCardProps> = ({
 
     const formatAmount = (amount: number) => {
         const absAmount = Math.abs(amount).toLocaleString('en-IN');
-        return `${amount >= 0 ? '+' : '-'} ₹ ${absAmount}`;
+        return `${amount >= 0 ? '+' : '-'} Rs ${absAmount}`;
     };
 
     const formatDate = (date: Date) => {
