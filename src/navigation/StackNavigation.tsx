@@ -16,6 +16,7 @@ const Stack = createNativeStackNavigator();
 export default function StackNavigator() {
     return (
         <DrawerProvider>
+            {/* @ts-expect-error - React Navigation type strictness issue */}
             <Stack.Navigator
                 screenOptions={{
                     headerShown: false,
