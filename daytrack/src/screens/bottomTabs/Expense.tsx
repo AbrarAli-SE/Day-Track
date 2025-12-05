@@ -8,6 +8,8 @@ import {
   Animated,
   Modal,
   RefreshControl,
+  Alert,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, NavigationProp, CompositeNavigationProp } from '@react-navigation/native';
@@ -17,6 +19,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
 import { TransactionCard, AddTransactionModal, ConfirmDialog } from '../../components';
 import AnimatedSearchBar from '../../components/AnimatedSearchBar';
+import backendService from '../../services/backendService';
 import { expenseStyles } from '../../styles/expense/expenseStyles';
 import { useDrawer } from '../../navigation/DrawerContext';
 import { useTransactions } from '../../hooks/useTransactions';
@@ -180,6 +183,102 @@ export default function ExpenseScreen() {
     return `Rs ${Math.abs(amount).toLocaleString('en-IN')}`;
   };
 
+  // ✅ Handle Analytics
+  const handleAnalytics = async () => {
+    if (!isAuthenticated) {
+      Alert.alert('Login Required', 'Please login to view analytics.');
+      return;
+    }
+
+    try {
+      const userId = auth().currentUser?.uid || 'guest';
+      const result = await backendService.calculateAnalytics(userId, filteredTransactions);
+
+      if (result.success) {
+        const analytics = result.data;
+        Alert.alert(
+          '📊 Advanced Analytics',
+          `Total Income: Rs ${analytics.totalIncome.toFixed(0)}\n` +
+          `Total Expense: Rs ${analytics.totalExpense.toFixed(0)}\n` +
+          `Net Balance: Rs ${analytics.netBalance.toFixed(0)}\n` +
+          `Savings Rate: ${analytics.savingsRate.toFixed(1)}%\n\n` +
+          `Top Expense: ${analytics.topExpenseCategory || 'N/A'}\n` +
+          `Top Income: ${analytics.topIncomeCategory || 'N/A'}`,
+          [{ text: 'View Insights', onPress: handleInsights }, { text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load analytics. Make sure backend is running.');
+    }
+  };
+
+  // ✅ Handle Insights
+  const handleInsights = async () => {
+    try {
+      const userId = auth().currentUser?.uid || 'guest';
+      const result = await backendService.getInsights(userId);
+
+      if (result.success && result.data.length > 0) {
+        const insightsText = result.data
+          .map((insight: any) => `${insight.title}\n${insight.message}`)
+          .join('\n\n');
+
+        Alert.alert('💡 AI Insights', insightsText);
+      } else {
+        Alert.alert('No Insights', 'Not enough data to generate insights yet.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load insights.');
+    }
+  };
+
+  // ✅ Handle History/Monthly Summary
+  const handleHistory = async () => {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
+    try {
+      const result = await backendService.getMonthlySummary(
+        filteredTransactions,
+        month,
+        year
+      );
+
+      if (result.success) {
+        const summary = result.data;
+        Alert.alert(
+          `📅 ${month}/${year} Summary`,
+          `Total Transactions: ${summary.totalTransactions}\n` +
+          `Total Income: Rs ${summary.totalIncome.toFixed(0)}\n` +
+          `Total Expense: Rs ${summary.totalExpense.toFixed(0)}\n` +
+          `Net Savings: Rs ${summary.netSavings.toFixed(0)}\n` +
+          `Savings Rate: ${summary.savingsRate.toFixed(1)}%`,
+          [
+            { text: 'Export CSV', onPress: handleExportCSV },
+            { text: 'OK' }
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate summary.');
+    }
+  };
+
+  // ✅ Handle CSV Export
+  const handleExportCSV = async () => {
+    try {
+      const csv = await backendService.exportToCSV(filteredTransactions);
+      
+      await Share.share({
+        message: csv,
+        title: 'Transaction Export',
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to export CSV.');
+    }
+  };
+
   const renderSearchResult = (item: Transaction) => (
     <TransactionCard
       data={{
@@ -266,6 +365,7 @@ export default function ExpenseScreen() {
         <View style={expenseStyles.contentContainer}>
           <Text style={expenseStyles.overviewLabel}>Overview</Text>
 
+          {/* Balance Card */}
           <View style={expenseStyles.balanceCard}>
             <View style={expenseStyles.balanceHeader}>
               <Text style={expenseStyles.balanceLabel}>Current Balance</Text>
@@ -320,7 +420,7 @@ export default function ExpenseScreen() {
             </View>
           </View>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Backend Integrated */}
           <View style={expenseStyles.actionButtonsContainer}>
             <TouchableOpacity
               style={expenseStyles.actionButton}
@@ -347,7 +447,7 @@ export default function ExpenseScreen() {
             <TouchableOpacity
               style={expenseStyles.actionButton}
               activeOpacity={0.8}
-              onPress={navigateToComingSoon}
+              onPress={handleHistory}
             >
               <View style={[expenseStyles.actionButtonIcon, { backgroundColor: '#F3E5F5' }]}>
                 <Ionicons name="time-outline" size={22} color="#9C27B0" />
@@ -358,7 +458,7 @@ export default function ExpenseScreen() {
             <TouchableOpacity
               style={expenseStyles.actionButton}
               activeOpacity={0.8}
-              onPress={navigateToComingSoon}
+              onPress={handleAnalytics}
             >
               <View style={[expenseStyles.actionButtonIcon, { backgroundColor: '#FFF3E0' }]}>
                 <Ionicons name="stats-chart-outline" size={22} color="#FF9800" />
