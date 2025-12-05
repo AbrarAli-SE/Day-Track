@@ -50,15 +50,9 @@ class SyncService {
       for (const item of pendingItems) {
         try {
           if (item.type === 'create' && item.data && item.tempId) {
-            // Convert date string back to Date object (AsyncStorage serialization)
-            const dataWithDate = {
-              ...item.data,
-              date: typeof item.data.date === 'string' ? new Date(item.data.date) : item.data.date,
-            };
-
             // Create transaction in Firestore
             const transaction = await transactionService.createTransaction(
-              dataWithDate
+              item.data
             );
             
             // Mark as synced locally
@@ -66,18 +60,10 @@ class SyncService {
             successCount++;
             console.log(`✅ Synced create: ${item.tempId}`);
           } else if (item.type === 'update' && item.transactionId && item.data) {
-            // Convert date string back to Date object if present
-            const dataWithDate = item.data.date
-              ? {
-                  ...item.data,
-                  date: typeof item.data.date === 'string' ? new Date(item.data.date) : item.data.date,
-                }
-              : item.data;
-
             // Update transaction in Firestore
             await transactionService.updateTransaction(
               item.transactionId,
-              dataWithDate
+              item.data
             );
             successCount++;
             console.log(`✅ Synced update: ${item.transactionId}`);

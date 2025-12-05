@@ -63,8 +63,6 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 export const TransactionCard: React.FC<TransactionCardProps> = ({
     data,
     onPress,
-    onEdit,
-    onDelete,
     style,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -245,32 +243,6 @@ export const TransactionCard: React.FC<TransactionCardProps> = ({
                                 <Text style={transactionCardStyles.detailLabel}>Notes</Text>
                             </View>
                             <Text style={transactionCardStyles.notesText}>{data.notes}</Text>
-                        </View>
-                    )}
-
-                    {/* Action Buttons */}
-                    {(onEdit || onDelete) && (
-                        <View style={transactionCardStyles.actionButtons}>
-                            {onEdit && (
-                                <TouchableOpacity
-                                    style={[transactionCardStyles.actionButton, transactionCardStyles.editButton]}
-                                    onPress={() => onEdit(data.id)}
-                                    activeOpacity={0.7}
-                                >
-                                    <Ionicons name="pencil" size={18} color="#FFFFFF" />
-                                    <Text style={transactionCardStyles.actionButtonText}>Edit</Text>
-                                </TouchableOpacity>
-                            )}
-                            {onDelete && (
-                                <TouchableOpacity
-                                    style={[transactionCardStyles.actionButton, transactionCardStyles.deleteButton]}
-                                    onPress={() => onDelete(data.id)}
-                                    activeOpacity={0.7}
-                                >
-                                    <Ionicons name="trash" size={18} color="#FFFFFF" />
-                                    <Text style={transactionCardStyles.actionButtonText}>Delete</Text>
-                                </TouchableOpacity>
-                            )}
                         </View>
                     )}
                 </View>

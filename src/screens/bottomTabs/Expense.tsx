@@ -246,7 +246,7 @@ export default function ExpenseScreen() {
         style={expenseStyles.scrollView}
         contentContainerStyle={expenseStyles.scrollContent}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll} 
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl

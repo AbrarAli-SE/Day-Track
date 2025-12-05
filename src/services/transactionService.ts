@@ -252,7 +252,8 @@ class TransactionService {
         }
 
         let query: FirebaseFirestoreTypes.Query = this.collection
-            .where('userId', '==', userId);
+            .where('userId', '==', userId)
+            .orderBy('date', 'desc');
 
         if (filter?.type && filter.type !== 'all') {
             query = query.where('type', '==', filter.type);
@@ -260,14 +261,9 @@ class TransactionService {
 
         const unsubscribe = query.onSnapshot(
             (snapshot) => {
-                console.log('📡 Real-time update received:', snapshot.docs.length, 'transactions');
-                
                 let transactions = snapshot.docs
                     .map((doc) => this.documentToTransaction(doc))
                     .filter((t): t is Transaction => t !== null);
-
-                // Sort by date client-side (no index required)
-                transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
 
                 // Apply timeline filter client-side
                 if (filter?.timeline) {

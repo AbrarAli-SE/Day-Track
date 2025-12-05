@@ -148,39 +148,4 @@ export const transactionCardStyles = StyleSheet.create({
         color: Colors.secondaryBlack,
         lineHeight: 20,
     },
-
-    // Action Buttons
-    actionButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        marginTop: 16,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(0, 0, 0, 0.06)',
-    },
-
-    actionButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 16,
-        borderRadius: 10,
-        gap: 6,
-    },
-
-    editButton: {
-        backgroundColor: Colors.positiveColor,
-    },
-
-    deleteButton: {
-        backgroundColor: Colors.negativeColor,
-    },
-
-    actionButtonText: {
-        fontSize: 14,
-        fontFamily: 'YaldeviColombo-SemiBold',
-        color: '#FFFFFF',
-    },
 });
