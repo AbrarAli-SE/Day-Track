@@ -23,7 +23,9 @@ import backendService from '../../services/backendService';
 import { expenseStyles } from '../../styles/expense/expenseStyles';
 import { useDrawer } from '../../navigation/DrawerContext';
 import { useTransactions } from '../../hooks/useTransactions';
+import { usePayouts } from '../../hooks/usePayouts';
 import { Transaction, CreateTransactionInput, UpdateTransactionInput } from '../../types/expense';
+import Colors from '../../constants/colors';
 
 type RootStackParamList = {
   Splash: undefined;
@@ -78,6 +80,8 @@ export default function ExpenseScreen() {
     isAuthenticated,
   } = useTransactions();
 
+  const { stats: payoutStats } = usePayouts();
+
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -114,6 +118,33 @@ export default function ExpenseScreen() {
 
   const navigateToComingSoon = () => {
     navigation.navigate('ComingSoon');
+  };
+
+  const navigateToPayouts = () => {
+    if (!isAuthenticated) {
+      Alert.alert('Login Required', 'Please login to manage payouts.');
+      navigation.navigate('LoginScreen');
+      return;
+    }
+    navigation.navigate('PayoutScreen' as never);
+  };
+
+  const navigateToHistory = () => {
+    if (!isAuthenticated) {
+      Alert.alert('Login Required', 'Please login to view history.');
+      navigation.navigate('LoginScreen');
+      return;
+    }
+    navigation.navigate('HistoryScreen' as never);
+  };
+
+  const navigateToAnalytics = () => {
+    if (!isAuthenticated) {
+      Alert.alert('Login Required', 'Please login to view analytics.');
+      navigation.navigate('LoginScreen');
+      return;
+    }
+    navigation.navigate('AnalyticsScreen' as never);
   };
 
   const openFilterModal = () => {
@@ -291,6 +322,8 @@ export default function ExpenseScreen() {
         category: item.category,
         transactionMethod: item.paymentMethod,
         notes: item.notes,
+        categoryIcon: item.categoryIcon,
+        categoryColor: item.categoryColor,
       }}
       onPress={handleTransactionPress}
       onEdit={handleEditTransaction}
@@ -333,6 +366,8 @@ export default function ExpenseScreen() {
               category: item.category,
               transactionMethod: item.paymentMethod,
               notes: item.notes,
+              categoryIcon: item.categoryIcon,
+              categoryColor: item.categoryColor,
             }))}
             renderSearchResult={renderSearchResult}
           />
@@ -383,8 +418,17 @@ export default function ExpenseScreen() {
             </View>
 
             <Text style={expenseStyles.balanceAmount}>
-              {isBalanceVisible ? formatCurrency(stats.totalBalance) : 'Rs ****'}
+              {isBalanceVisible
+                ? formatCurrency(stats.totalBalance + payoutStats.netBalance)
+                : 'Rs ****'
+              }
             </Text>
+
+            {isBalanceVisible && (
+              <Text style={{ fontSize: 11, color: Colors.secondaryBlack, marginTop: 4 }}>
+                Transactions: {formatCurrency(stats.totalBalance)} | Payouts: {formatCurrency(payoutStats.netBalance)}
+              </Text>
+            )}
 
             <View style={expenseStyles.statsRow}>
               <View style={expenseStyles.statItem}>
@@ -420,12 +464,12 @@ export default function ExpenseScreen() {
             </View>
           </View>
 
-          {/* Action Buttons - Backend Integrated */}
+          {/* Action Buttons - Navigation Based */}
           <View style={expenseStyles.actionButtonsContainer}>
             <TouchableOpacity
               style={expenseStyles.actionButton}
               activeOpacity={0.8}
-              onPress={navigateToComingSoon}
+              onPress={navigateToPayouts}
             >
               <View style={[expenseStyles.actionButtonIcon, { backgroundColor: '#E3F2FD' }]}>
                 <Ionicons name="wallet-outline" size={22} color="#2196F3" />
@@ -447,7 +491,7 @@ export default function ExpenseScreen() {
             <TouchableOpacity
               style={expenseStyles.actionButton}
               activeOpacity={0.8}
-              onPress={handleHistory}
+              onPress={navigateToHistory}
             >
               <View style={[expenseStyles.actionButtonIcon, { backgroundColor: '#F3E5F5' }]}>
                 <Ionicons name="time-outline" size={22} color="#9C27B0" />
@@ -458,7 +502,7 @@ export default function ExpenseScreen() {
             <TouchableOpacity
               style={expenseStyles.actionButton}
               activeOpacity={0.8}
-              onPress={handleAnalytics}
+              onPress={navigateToAnalytics}
             >
               <View style={[expenseStyles.actionButtonIcon, { backgroundColor: '#FFF3E0' }]}>
                 <Ionicons name="stats-chart-outline" size={22} color="#FF9800" />
@@ -491,26 +535,30 @@ export default function ExpenseScreen() {
                 </Text>
               </View>
             ) : (
-              filteredTransactions.map((transaction) => (
-                <TransactionCard
-                  key={transaction.id}
-                  data={{
-                    id: transaction.id,
-                    title: transaction.title,
-                    subtitle: transaction.category,
-                    amount: transaction.type === 'income' ? transaction.amount : -transaction.amount,
-                    type: transaction.type,
-                    timestamp: transaction.date,
-                    category: transaction.category,
-                    transactionMethod: transaction.paymentMethod,
-                    notes: transaction.notes,
-                  }}
-                  onPress={handleTransactionPress}
-                  onEdit={handleEditTransaction}
-                  onDelete={handleDeleteTransaction}
-                  style={expenseStyles.transactionCard}
-                />
-              ))
+              [...filteredTransactions]
+                .sort((a, b) => b.date.getTime() - a.date.getTime())
+                .map((transaction) => (
+                  <TransactionCard
+                    key={transaction.id}
+                    data={{
+                      id: transaction.id,
+                      title: transaction.title,
+                      subtitle: transaction.category,
+                      amount: transaction.type === 'income' ? transaction.amount : -transaction.amount,
+                      type: transaction.type,
+                      timestamp: transaction.date,
+                      category: transaction.category,
+                      transactionMethod: transaction.paymentMethod,
+                      notes: transaction.notes,
+                      categoryIcon: transaction.categoryIcon,
+                      categoryColor: transaction.categoryColor,
+                    }}
+                    onPress={handleTransactionPress}
+                    onEdit={handleEditTransaction}
+                    onDelete={handleDeleteTransaction}
+                    style={expenseStyles.transactionCard}
+                  />
+                ))
             )}
           </View>
         </View>

@@ -6,3 +6,6 @@ export { default as CustomDrawer } from './CustomDrawer';
 export { default as Loader } from './Loader';
 export { AddTransactionModal } from './AddTransactionModal';
 export { ConfirmDialog } from './ConfirmDialog';
+export { AddPayoutModal } from './AddPayoutModal';
+export { PeopleSelectionModal } from './PeopleSelectionModal';
+export { ExportFormatModal } from './ExportFormatModal';

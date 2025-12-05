@@ -10,13 +10,15 @@ import SignUpScreen from '../screens/auth/SignUpScreen';
 import ForgetPasswordScreen from '../screens/auth/ForgetPasswordScreen';
 import ComingSoonScreen from '../screens/ComingSoonScreen';
 import NotificationsScreen from '../screens/bottomTabs/NotificationsScreen';
+import PayoutScreen from '../screens/bottomTabs/PayoutScreen';
+import HistoryScreen from '../screens/bottomTabs/HistoryScreen';
+import AnalyticsScreen from '../screens/bottomTabs/AnalyticsScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
     return (
         <DrawerProvider>
-            {/* @ts-expect-error - React Navigation type strictness issue */}
             <Stack.Navigator
                 screenOptions={{
                     headerShown: false,
@@ -31,9 +33,10 @@ export default function StackNavigator() {
                 <Stack.Screen name="MainScreen" component={BottomTabsNavigator} />
                 <Stack.Screen name="ComingSoon" component={ComingSoonScreen} />
                 <Stack.Screen name="Notifications" component={NotificationsScreen} />
+                <Stack.Screen name="PayoutScreen" component={PayoutScreen}/>
+                <Stack.Screen name="HistoryScreen" component={HistoryScreen}/>
+                <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen}/>
             </Stack.Navigator>
-
-            {/* Drawer overlays everything */}
             <CustomDrawer />
         </DrawerProvider>
     );

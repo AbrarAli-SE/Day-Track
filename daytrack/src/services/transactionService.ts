@@ -34,7 +34,7 @@ class TransactionService {
             id: doc.id,
             userId: data.userId,
             title: data.title,
-            amount: data.amount,
+            amount: Number(data.amount) || 0, // Ensure amount is a number
             type: data.type,
             category: data.category,
             categoryIcon: data.categoryIcon,
@@ -252,18 +252,23 @@ class TransactionService {
         }
 
         let query: FirebaseFirestoreTypes.Query = this.collection
-            .where('userId', '==', userId)
-            .orderBy('date', 'desc');
+            .where('userId', '==', userId);
 
         if (filter?.type && filter.type !== 'all') {
             query = query.where('type', '==', filter.type);
         }
 
         const unsubscribe = query.onSnapshot(
+            {
+                includeMetadataChanges: true,
+            },
             (snapshot) => {
                 let transactions = snapshot.docs
                     .map((doc) => this.documentToTransaction(doc))
                     .filter((t): t is Transaction => t !== null);
+
+                // ✅ Sort client-side by date descending
+                transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
 
                 // Apply timeline filter client-side
                 if (filter?.timeline) {

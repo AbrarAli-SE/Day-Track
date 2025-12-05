@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
 import {
     View,
     Text,
@@ -31,6 +32,8 @@ export interface TransactionData {
     notes?: string;
     transactionMethod?: string;
     icon?: any; // for custom icon
+    categoryIcon?: string; // Ionicons name
+    categoryColor?: string; // hex color
 }
 
 interface TransactionCardProps {
@@ -63,6 +66,8 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 export const TransactionCard: React.FC<TransactionCardProps> = ({
     data,
     onPress,
+    onEdit,
+    onDelete,
     style,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -123,6 +128,10 @@ export const TransactionCard: React.FC<TransactionCardProps> = ({
     };
 
     const getCategoryColor = () => {
+        // Use dynamic color if provided
+        if (data.categoryColor) {
+            return data.categoryColor;
+        }
         if (data.category && CATEGORY_COLORS[data.category]) {
             return CATEGORY_COLORS[data.category];
         }
@@ -133,6 +142,26 @@ export const TransactionCard: React.FC<TransactionCardProps> = ({
         <TouchableOpacity
             style={[transactionCardStyles.container, style]}
             onPress={toggleExpand}
+            onLongPress={() => {
+                if (onEdit || onDelete) {
+                    Alert.alert(
+                        data.title,
+                        'What would you like to do?',
+                        [
+                            { text: 'Cancel', style: 'cancel' as 'cancel' },
+                            ...(onEdit ? [{
+                                text: 'Edit',
+                                onPress: () => onEdit(data.id),
+                            }] : []),
+                            ...(onDelete ? [{
+                                text: 'Delete',
+                                style: 'destructive' as 'destructive',
+                                onPress: () => onDelete(data.id),
+                            }] : []),
+                        ]
+                    );
+                }
+            }}
             activeOpacity={0.7}
         >
             {/* Main Row */}
@@ -145,10 +174,18 @@ export const TransactionCard: React.FC<TransactionCardProps> = ({
                             { backgroundColor: getCategoryColor() },
                         ]}
                     >
-                        <Image
-                            source={getCategoryIcon()}
-                            style={transactionCardStyles.icon}
-                        />
+                        {data.categoryIcon ? (
+                            <Ionicons
+                                name={data.categoryIcon as any}
+                                size={22}
+                                color="#FFFFFF"
+                            />
+                        ) : (
+                            <Image
+                                source={getCategoryIcon()}
+                                style={transactionCardStyles.icon}
+                            />
+                        )}
                     </View>
 
                     {/* Text Container */}

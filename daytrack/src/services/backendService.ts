@@ -50,16 +50,19 @@ class BackendService {
         }
     }
 
-    // Export to CSV
-    async exportToCSV(transactions: Transaction[]) {
+    // Export to CSV with enhanced data
+    async exportToCSV(transactions: any[], month?: number, year?: number, userName?: string) {
         try {
             const response = await this.axios.post(
                 '/export/csv',
                 {
                     transactions: transactions.map(t => ({
                         ...t,
-                        date: t.date.toISOString(),
+                        date: t.date?.toISOString ? t.date.toISOString() : t.date,
                     })),
+                    month,
+                    year,
+                    userName,
                 },
                 {
                     responseType: 'text',
@@ -73,25 +76,29 @@ class BackendService {
         }
     }
 
-    // Generate monthly summary
+    // Get monthly summary with PDF data
     async getMonthlySummary(
-        transactions: Transaction[],
+        transactions: any[],
         month: number,
-        year: number
+        year: number,
+        userName?: string,
+        summary?: any
     ) {
         try {
-            const response = await this.axios.post('/export/summary', {
+            const response = await this.axios.post('/export/pdf-data', {
                 transactions: transactions.map(t => ({
                     ...t,
-                    date: t.date.toISOString(),
+                    date: t.date?.toISOString ? t.date.toISOString() : t.date,
                 })),
                 month,
                 year,
+                userName,
+                summary,
             });
 
             return response.data;
         } catch (error: any) {
-            console.error('Summary API error:', error.message);
+            console.error('PDF data error:', error.message);
             throw error;
         }
     }

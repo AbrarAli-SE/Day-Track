@@ -18,6 +18,7 @@ import {
     CreatePayoutInput,
     UpdatePayoutInput,
     Payout,
+    PayoutPerson,
 } from '../types/payout';
 import { addPayoutModalStyles as styles } from '../styles/payout/addPayoutModalStyles';
 import Colors from '../constants/colors';
@@ -28,6 +29,7 @@ interface AddPayoutModalProps {
     onSave: (payout: CreatePayoutInput | UpdatePayoutInput) => Promise<void>;
     isLoading?: boolean;
     editPayout?: Payout | null;
+    selectedPerson?: PayoutPerson | null;
 }
 
 export const AddPayoutModal: React.FC<AddPayoutModalProps> = ({
@@ -36,6 +38,7 @@ export const AddPayoutModal: React.FC<AddPayoutModalProps> = ({
     onSave,
     isLoading = false,
     editPayout = null,
+    selectedPerson = null,
 }) => {
     const isEditMode = !!editPayout;
 
@@ -63,6 +66,15 @@ export const AddPayoutModal: React.FC<AddPayoutModalProps> = ({
             }
         }
     }, [visible, editPayout]);
+
+    useEffect(() => {
+        if (visible && selectedPerson && !isEditMode) {
+            // Auto-fill person details
+            setPersonName(selectedPerson.name);
+            setPersonEmail(selectedPerson.email || '');
+            setErrors({});
+        }
+    }, [visible, selectedPerson, isEditMode]);
 
     const loadPayoutData = (payout: Payout) => {
         setPayoutType(payout.type);

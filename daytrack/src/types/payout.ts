@@ -45,3 +45,15 @@ export interface PayoutStats {
     pendingReceipts: number;
     completedCount: number;
 }
+// src/types/payout.ts (ADD this interface)
+
+export interface PayoutPerson {
+    id: string;
+    userId: string;
+    name: string;
+    email?: string;
+    totalOwed: number; // Negative = I owe them, Positive = They owe me
+    lastTransactionDate: Date;
+    transactionCount: number;
+    createdAt: Date;
+}

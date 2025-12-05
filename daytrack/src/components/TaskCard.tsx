@@ -1,164 +1,223 @@
+// src/components/TaskCard.tsx (REPLACE ENTIRE FILE)
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Task, PRIORITY_COLORS } from '../types/task';
+import Colors from '../constants/colors';
 
 interface TaskCardProps {
-    task: {
-        id: string;
-        title: string;
-        time: string;
-        done: boolean;
-        category: string;
-        color: string;
-    };
-    isLast: boolean;
-    onMenuPress: (id: string) => void;
-    onTaskPress: () => void;
+    task: Task;
+    isLast?: boolean;
+    onMenuPress?: (taskId: string) => void;
+    onTaskPress?: (taskId: string) => void;
+    onToggleComplete?: (taskId: string) => void;
 }
 
-export default function TaskCard({ task, isLast, onMenuPress, onTaskPress }: TaskCardProps) {
+const TaskCard: React.FC<TaskCardProps> = ({
+    task,
+    isLast = false,
+    onMenuPress,
+    onTaskPress,
+    onToggleComplete,
+}) => {
+    const formatTime = (timeString?: string) => {
+        if (!timeString) return null;
+        return timeString;
+    };
+
+    const isOverdue = task.status === 'overdue';
+    const priorityColor = PRIORITY_COLORS[task.priority];
+
     return (
-        <View style={styles.taskItemContainer}>
-            {/* Timeline Line */}
-            {!isLast && <View style={styles.timelineLine} />}
+        <View style={[styles.container, isLast && styles.lastCard]}>
+            {/* Timeline Connector */}
+            {!isLast && <View style={styles.timeline} />}
+
+            {/* Time Badge */}
+            <View style={styles.timeBadge}>
+                <Text style={styles.timeText}>{formatTime(task.dueTime) || 'All Day'}</Text>
+            </View>
 
             {/* Task Card */}
             <TouchableOpacity
                 style={[
-                    styles.taskCard,
-                    task.done && styles.taskCardDone,
-                    { borderLeftColor: task.color },
+                    styles.card,
+                    task.completed && styles.cardCompleted,
+                    isOverdue && !task.completed && styles.cardOverdue,
                 ]}
+                onPress={() => onTaskPress?.(task.id)}
+                onLongPress={() => onMenuPress?.(task.id)}
                 activeOpacity={0.7}
-                onPress={onTaskPress}
             >
-                {/* Time Badge */}
-                <View style={styles.timeBadge}>
-                    <Ionicons name="time-outline" size={14} color="#5E5F60" />
-                    <Text style={styles.timeText}>{task.time}</Text>
-                </View>
+                {/* Priority Indicator */}
+                <View style={[styles.priorityIndicator, { backgroundColor: priorityColor }]} />
 
-                {/* Task Content */}
-                <View style={styles.taskContent}>
-                    <View style={styles.taskLeft}>
-                        {/* Checkbox */}
-                        <TouchableOpacity
-                            style={styles.taskCheckbox}
-                            activeOpacity={0.7}
-                            onPress={onTaskPress}
-                        >
-                            {task.done ? (
-                                <View style={[styles.checkboxFilled, { backgroundColor: task.color }]}>
-                                    <Ionicons name="checkmark" size={16} color="#FFFFFF" />
-                                </View>
-                            ) : (
-                                <View style={[styles.checkboxEmpty, { borderColor: task.color }]} />
-                            )}
-                        </TouchableOpacity>
+                <View style={styles.content}>
+                    {/* Checkbox */}
+                    <TouchableOpacity
+                        style={[
+                            styles.checkbox,
+                            task.completed && styles.checkboxCompleted,
+                            { borderColor: task.categoryColor },
+                            task.completed && { backgroundColor: task.categoryColor },
+                        ]}
+                        onPress={() => onToggleComplete?.(task.id)}
+                        activeOpacity={0.7}
+                    >
+                        {task.completed && (
+                            <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                        )}
+                    </TouchableOpacity>
 
-                        {/* Task Info */}
-                        <View style={styles.taskInfo}>
-                            <Text style={[
+                    {/* Task Info */}
+                    <View style={styles.taskInfo}>
+                        <Text
+                            style={[
                                 styles.taskTitle,
-                                task.done && styles.taskTitleDone,
-                            ]}>
-                                {task.title}
+                                task.completed && styles.taskTitleCompleted,
+                            ]}
+                            numberOfLines={2}
+                        >
+                            {task.title}
+                        </Text>
+
+                        {task.description && (
+                            <Text style={styles.taskDescription} numberOfLines={1}>
+                                {task.description}
                             </Text>
-                            <View style={styles.taskMeta}>
-                                <View style={[styles.categoryDot, { backgroundColor: task.color }]} />
-                                <Text style={styles.taskCategory}>{task.category}</Text>
+                        )}
+
+                        <View style={styles.taskMeta}>
+                            {/* Category */}
+                            <View style={[styles.categoryBadge, { backgroundColor: task.categoryColor + '20' }]}>
+                                <Ionicons name={task.categoryIcon as any} size={12} color={task.categoryColor} />
+                                <Text style={[styles.categoryText, { color: task.categoryColor }]}>
+                                    {task.category}
+                                </Text>
                             </View>
+
+                            {/* Recurrence Indicator */}
+                            {task.recurrence !== 'none' && (
+                                <View style={styles.recurrenceIndicator}>
+                                    <Ionicons name="repeat" size={12} color={Colors.secondaryBlack} />
+                                    <Text style={styles.recurrenceText}>{task.recurrence}</Text>
+                                </View>
+                            )}
+
+                            {/* Overdue Badge */}
+                            {isOverdue && !task.completed && (
+                                <View style={styles.overdueBadge}>
+                                    <Ionicons name="alert-circle" size={12} color={Colors.negativeColor} />
+                                    <Text style={styles.overdueText}>Overdue</Text>
+                                </View>
+                            )}
                         </View>
                     </View>
 
-                    {/* Task Actions */}
+                    {/* Menu Button */}
                     <TouchableOpacity
-                        style={styles.taskMoreButton}
+                        style={styles.menuButton}
+                        onPress={() => onMenuPress?.(task.id)}
                         activeOpacity={0.7}
-                        onPress={() => onMenuPress(task.id)}
                     >
-                        <Ionicons name="ellipsis-horizontal" size={20} color="#5E5F60" />
+                        <Ionicons name="ellipsis-vertical" size={18} color={Colors.secondaryBlack} />
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
-    taskItemContainer: {
+    container: {
         position: 'relative',
-        marginBottom: 16,
+        marginBottom: 20,
     },
 
-    timelineLine: {
+    lastCard: {
+        marginBottom: 0,
+    },
+
+    timeline: {
         position: 'absolute',
-        left: 8,
-        top: 50,
+        left: 16,
+        top: 48,
+        bottom: -20,
         width: 2,
-        height: '100%',
         backgroundColor: 'rgba(0, 0, 0, 0.06)',
     },
 
-    taskCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
-        borderLeftWidth: 4,
-    },
-
-    taskCardDone: {
-        opacity: 0.6,
-        backgroundColor: 'rgba(0, 0, 0, 0.02)',
-    },
-
     timeBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        marginBottom: 12,
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        zIndex: 2,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.08)',
     },
 
     timeText: {
         fontSize: 11,
         fontFamily: 'YaldeviColombo-SemiBold',
-        color: '#5E5F60',
+        color: Colors.primaryBlack,
     },
 
-    taskContent: {
+    card: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        marginLeft: 32,
+        marginTop: 28,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.04)',
+        overflow: 'hidden',
+    },
+
+    cardCompleted: {
+        opacity: 0.7,
+    },
+
+    cardOverdue: {
+        borderColor: Colors.negativeColor,
+        borderWidth: 1.5,
+    },
+
+    priorityIndicator: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 4,
+    },
+
+    content: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        padding: 16,
+        paddingLeft: 20,
     },
 
-    taskLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-
-    taskCheckbox: {
-        marginRight: 12,
-    },
-
-    checkboxEmpty: {
+    checkbox: {
         width: 24,
         height: 24,
         borderRadius: 12,
         borderWidth: 2,
-    },
-
-    checkboxFilled: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 12,
+    },
+
+    checkboxCompleted: {
+        borderWidth: 0,
     },
 
     taskInfo: {
@@ -168,39 +227,83 @@ const styles = StyleSheet.create({
     taskTitle: {
         fontSize: 15,
         fontFamily: 'YaldeviColombo-SemiBold',
-        color: '#151623',
-        marginBottom: 6,
+        color: Colors.primaryBlack,
+        marginBottom: 4,
+        lineHeight: 22,
     },
 
-    taskTitleDone: {
+    taskTitleCompleted: {
         textDecorationLine: 'line-through',
-        color: '#5E5F60',
+        color: Colors.secondaryBlack,
+    },
+
+    taskDescription: {
+        fontSize: 13,
+        fontFamily: 'YaldeviColombo-Regular',
+        color: Colors.secondaryBlack,
+        marginBottom: 8,
     },
 
     taskMeta: {
         flexDirection: 'row',
-        alignItems: 'center',
+        flexWrap: 'wrap',
         gap: 6,
     },
 
-    categoryDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
+    categoryBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
 
-    taskCategory: {
-        fontSize: 12,
-        fontFamily: 'YaldeviColombo-Regular',
-        color: '#5E5F60',
+    categoryText: {
+        fontSize: 11,
+        fontFamily: 'YaldeviColombo-SemiBold',
     },
 
-    taskMoreButton: {
+    recurrenceIndicator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+
+    recurrenceText: {
+        fontSize: 11,
+        fontFamily: 'YaldeviColombo-Medium',
+        color: Colors.secondaryBlack,
+    },
+
+    overdueBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        backgroundColor: 'rgba(226, 0, 0, 0.10)',
+    },
+
+    overdueText: {
+        fontSize: 11,
+        fontFamily: 'YaldeviColombo-SemiBold',
+        color: Colors.negativeColor,
+    },
+
+    menuButton: {
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: 'rgba(0, 0, 0, 0.04)',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
 });
+
+export default TaskCard;

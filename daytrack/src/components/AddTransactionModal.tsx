@@ -150,9 +150,15 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
         Keyboard.dismiss();
 
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            setErrors({ ...errors, amount: 'Please enter a valid amount' });
+            return;
+        }
+
         const transactionData: CreateTransactionInput | UpdateTransactionInput = {
             title: title.trim(),
-            amount: parseFloat(amount),
+            amount: parsedAmount,
             type: transactionType,
             category: selectedCategory!.name,
             categoryIcon: selectedCategory!.icon,
