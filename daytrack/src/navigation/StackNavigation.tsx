@@ -13,6 +13,7 @@ import NotificationsScreen from '../screens/bottomTabs/NotificationsScreen';
 import PayoutScreen from '../screens/bottomTabs/PayoutScreen';
 import HistoryScreen from '../screens/bottomTabs/HistoryScreen';
 import AnalyticsScreen from '../screens/bottomTabs/AnalyticsScreen';
+import ProfileScreen from '../screens/bottomTabs/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,9 @@ export default function StackNavigator() {
                 <Stack.Screen name="PayoutScreen" component={PayoutScreen}/>
                 <Stack.Screen name="HistoryScreen" component={HistoryScreen}/>
                 <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen}/>
+                <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+
+
             </Stack.Navigator>
             <CustomDrawer />
         </DrawerProvider>

@@ -334,6 +334,9 @@ class TransactionService {
                 if (t.date >= thirtyDaysAgo) last30DaysExpense += t.amount;
             }
         });
+        const savingsRate = totalIncome > 0
+            ? ((totalIncome - totalExpense) / totalIncome) * 100
+            : 0;
 
         return {
             totalBalance: totalIncome - totalExpense,
@@ -343,6 +346,7 @@ class TransactionService {
             last7DaysExpense,
             last30DaysIncome,
             last30DaysExpense,
+            savingsRate,
         };
     }
 

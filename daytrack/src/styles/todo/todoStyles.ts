@@ -452,4 +452,99 @@ export const todoStyles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.06)',
         marginVertical: 8,
     },
+
+        // Month label above calendar rows
+        monthLabel: {
+            fontSize: 11,
+            fontFamily: 'YaldeviColombo-SemiBold',
+            color: '#5E5F60',
+            marginLeft: 8,
+            marginBottom: 6,
+            marginTop: 12,
+        },
+
+        // Task count badge on date cards
+        taskCountBadge: {
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            minWidth: 18,
+            height: 18,
+            borderRadius: 9,
+            backgroundColor: '#0047AB',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 4,
+        },
+
+        taskCountText: {
+            fontSize: 10,
+            fontFamily: 'YaldeviColombo-Bold',
+            color: '#FFFFFF',
+        },
+
+        // Jump-to-today button
+        todayButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+            backgroundColor: 'rgba(0, 71, 171, 0.10)',
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 12,
+        },
+
+        todayButtonText: {
+            fontSize: 12,
+            fontFamily: 'YaldeviColombo-SemiBold',
+            color: '#0047AB',
+        },
+
+    // Stats Chip
+    statsChip: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        backgroundColor: '#F0F4F8',
+        borderRadius: 16,
+    },
+
+    statsChipText: {
+        fontSize: 12,
+        fontFamily: 'YaldeviColombo-Medium',
+        color: '#0047AB',
+    },
+
+    // Empty State
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 60,
+        paddingHorizontal: 20,
+    },
+
+    emptyIconContainer: {
+        marginBottom: 16,
+        opacity: 0.5,
+    },
+
+    emptyTitle: {
+        fontSize: 18,
+        fontFamily: 'YaldeviColombo-SemiBold',
+        color: '#151623',
+        marginBottom: 8,
+    },
+
+    emptySubtitle: {
+        fontSize: 14,
+        fontFamily: 'YaldeviColombo-Regular',
+        color: '#5E5F60',
+        textAlign: 'center',
+    },
+
+    // Tasks Count
+    tasksCount: {
+        fontSize: 14,
+        fontFamily: 'YaldeviColombo-Medium',
+        color: '#0047AB',
+    },
 });

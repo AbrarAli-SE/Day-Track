@@ -154,12 +154,14 @@ export const expenseStyles = StyleSheet.create({
     },
 
     balanceAmount: {
-        ...typography.heading1,
+        // ...typography.heading1,
         fontSize: 36,
         fontFamily: 'YaldeviColombo-SemiBold',
         color: Colors.primaryBlack || '#000000',
         marginBottom: 20,
     },
+
+   
 
     // Stats Row
     statsRow: {

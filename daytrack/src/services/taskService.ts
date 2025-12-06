@@ -9,6 +9,7 @@ import {
     UpdateTaskInput,
     TaskStats,
 } from '../types/task';
+import notificationService from './notificationService';
 
 const COLLECTION_NAME = 'tasks';
 
@@ -90,7 +91,7 @@ class TaskService {
         const docRef = await this.collection.add(docData);
         console.log('✅ Task created:', docRef.id);
 
-        return {
+        const task: Task = {
             id: docRef.id,
             userId,
             title: input.title.trim(),
@@ -109,6 +110,11 @@ class TaskService {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
+
+        // ✅ Schedule notifications for the new task
+        notificationService.scheduleAllNotifications(task);
+
+        return task;
     }
 
     async updateTask(taskId: string, input: UpdateTaskInput): Promise<Task> {
@@ -164,6 +170,10 @@ class TaskService {
         const task = this.documentToTask(updatedDoc);
         if (!task) throw new Error('Failed to update task');
 
+        // ✅ Reschedule notifications for updated task
+        notificationService.cancelTaskNotifications(taskId);
+        notificationService.scheduleAllNotifications(task);
+
         console.log('✅ Task updated:', task.id);
         return task;
     }
@@ -183,6 +193,9 @@ class TaskService {
         }
 
         await docRef.delete();
+        
+        // ✅ Cancel notifications for deleted task
+        notificationService.cancelTaskNotifications(taskId);
         console.log('✅ Task deleted:', taskId);
     }
 
@@ -218,6 +231,13 @@ class TaskService {
         const updatedDoc = await docRef.get();
         const task = this.documentToTask(updatedDoc);
         if (!task) throw new Error('Failed to toggle task');
+
+        // ✅ Cancel/reschedule notifications based on completion
+        if (task.completed) {
+            notificationService.cancelTaskNotifications(taskId);
+        } else {
+            notificationService.scheduleAllNotifications(task);
+        }
 
         console.log('✅ Task toggled:', task.id, 'Completed:', task.completed);
         return task;

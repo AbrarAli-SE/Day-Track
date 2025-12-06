@@ -448,13 +448,15 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                         {/* Reminder */}
                         <View style={styles.formSection}>
                             <Text style={styles.formLabel}>Reminder</Text>
-                            <TouchableOpacity
+                            <View
                                 style={styles.reminderToggle}
-                                activeOpacity={1}
-                                onPress={() => setShowReminderPicker(true)}
-                                disabled={!reminderEnabled}
                             >
-                                <View style={styles.reminderLeft}>
+                                <TouchableOpacity
+                                    style={styles.reminderLeft}
+                                    onPress={() => reminderEnabled && setShowReminderPicker(true)}
+                                    disabled={!reminderEnabled}
+                                    activeOpacity={0.7}
+                                >
                                     <View style={styles.reminderIconContainer}>
                                         <Ionicons name="notifications-outline" size={22} color="#FF9800" />
                                     </View>
@@ -466,19 +468,19 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                                 : 'Get notified before task'}
                                         </Text>
                                     </View>
-                                </View>
+                                </TouchableOpacity>
                                 <Switch
                                     value={reminderEnabled}
                                     onValueChange={handleReminderToggle}
                                     trackColor={{ false: '#E0E0E0', true: '#FF9800' + '40' }}
                                     thumbColor={reminderEnabled ? '#FF9800' : '#f4f3f4'}
                                 />
-                            </TouchableOpacity>
+                            </View>
                         </View>
 
                         <View style={{ height: 20 }} />
                     </ScrollView>
-
+//error of the toggle in the add task  
                     <View style={styles.actionButtonsContainer}>
                         <TouchableOpacity
                             style={styles.cancelButton}

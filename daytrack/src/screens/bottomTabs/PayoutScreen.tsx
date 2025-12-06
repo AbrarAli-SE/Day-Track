@@ -1,5 +1,3 @@
-// src/screens/PayoutScreen.tsx
-
 import React, { useState } from 'react';
 import {
     View,

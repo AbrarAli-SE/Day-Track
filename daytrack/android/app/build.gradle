@@ -79,6 +79,14 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    // Exclude legacy support libraries to avoid duplicate classes with AndroidX
+    configurations.all {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+        exclude group: 'com.android.support', module: 'support-core-ui'
+    }
+
     namespace "com.daytrack"
     defaultConfig {
         applicationId "com.daytrack"

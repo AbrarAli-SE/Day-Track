@@ -9,3 +9,5 @@ export { ConfirmDialog } from './ConfirmDialog';
 export { AddPayoutModal } from './AddPayoutModal';
 export { PeopleSelectionModal } from './PeopleSelectionModal';
 export { ExportFormatModal } from './ExportFormatModal';
+export { AddTaskModal } from './AddTaskModal'; 
+export { default as TaskCard } from './TaskCard'; 

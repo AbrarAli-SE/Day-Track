@@ -1,4 +1,4 @@
-// src/components/CustomDrawer.tsx (REPLACE ENTIRE FILE)
+// src/components/CustomDrawer.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -39,17 +39,14 @@ export default function CustomDrawer() {
     const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    // Listen to auth state changes
     useEffect(() => {
         const unsubscribe = auth().onAuthStateChanged((currentUser) => {
             setUser(currentUser);
             loadSyncSettings();
         });
-
         return unsubscribe;
     }, []);
 
-    // Load sync settings and stats
     const loadSyncSettings = async () => {
         const enabled = await offlineStorageService.isSyncEnabled();
         setSyncEnabled(enabled);
@@ -61,7 +58,6 @@ export default function CustomDrawer() {
         setLastSyncTime(lastSync);
     };
 
-    // Reload stats when drawer opens
     useEffect(() => {
         if (isDrawerOpen) {
             loadSyncSettings();
@@ -71,7 +67,6 @@ export default function CustomDrawer() {
     useEffect(() => {
         if (isDrawerOpen) {
             setModalVisible(true);
-
             Animated.parallel([
                 Animated.timing(slideAnim, {
                     toValue: 0,
@@ -120,10 +115,7 @@ export default function CustomDrawer() {
             'Logout',
             'Are you sure you want to logout? Your offline data will remain safe.',
             [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
+                { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Logout',
                     style: 'destructive',
@@ -150,7 +142,13 @@ export default function CustomDrawer() {
         }, 300);
     };
 
-    // Handle cloud sync toggle
+    const handleManageProfile = () => {
+        closeDrawer();
+        setTimeout(() => {
+            navigation.navigate('ProfileScreen');
+        }, 300);
+    };
+
     const handleSyncToggle = async (value: boolean) => {
         if (!user) {
             Alert.alert('Login Required', 'Please login to enable cloud sync.');
@@ -161,16 +159,12 @@ export default function CustomDrawer() {
         await offlineStorageService.setSyncEnabled(value);
 
         if (value) {
-            // Auto-sync when enabled
             Alert.alert(
                 'Cloud Sync Enabled',
                 'Your data will now sync with the cloud. Do you want to sync now?',
                 [
                     { text: 'Later', style: 'cancel' },
-                    {
-                        text: 'Sync Now',
-                        onPress: handleManualSync,
-                    },
+                    { text: 'Sync Now', onPress: handleManualSync },
                 ]
             );
         } else {
@@ -181,7 +175,6 @@ export default function CustomDrawer() {
         }
     };
 
-    // Manual sync
     const handleManualSync = async () => {
         if (!user) {
             Alert.alert('Login Required', 'Please login to sync your data.');
@@ -196,19 +189,16 @@ export default function CustomDrawer() {
         setIsSyncing(true);
         try {
             const result = await syncService.syncPendingTransactions();
-            
+
             if (result.total === 0) {
                 Alert.alert('Up to Date', 'All data is already synced!');
             } else {
                 Alert.alert(
                     'Sync Complete',
-                    `Successfully synced ${result.success} out of ${result.total} items.${
-                        result.failed > 0 ? `\n${result.failed} items failed.` : ''
+                    `Successfully synced ${result.success} out of ${result.total} items.${result.failed > 0 ? `\n${result.failed} items failed.` : ''
                     }`
                 );
             }
-
-            // Reload stats
             await loadSyncSettings();
         } catch (error) {
             console.error('Sync error:', error);
@@ -230,17 +220,17 @@ export default function CustomDrawer() {
 
     const formatLastSync = () => {
         if (!lastSyncTime) return 'Never';
-        
+
         const now = new Date();
         const diff = now.getTime() - lastSyncTime.getTime();
         const minutes = Math.floor(diff / 60000);
-        
+
         if (minutes < 1) return 'Just now';
         if (minutes < 60) return `${minutes}m ago`;
-        
+
         const hours = Math.floor(minutes / 60);
         if (hours < 24) return `${hours}h ago`;
-        
+
         const days = Math.floor(hours / 24);
         return `${days}d ago`;
     };
@@ -253,37 +243,22 @@ export default function CustomDrawer() {
             onRequestClose={handleClose}
             statusBarTranslucent
         >
-            <Animated.View
-                style={[drawerStyles.overlay, { opacity: overlayOpacity }]}
-            >
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    activeOpacity={1}
-                    onPress={handleClose}
-                />
+            <Animated.View style={[drawerStyles.overlay, { opacity: overlayOpacity }]}>
+                <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={handleClose} />
             </Animated.View>
 
             <Animated.View
                 style={[
                     drawerStyles.drawer,
-                    {
-                        width: DRAWER_WIDTH,
-                        transform: [{ translateX: slideAnim }],
-                    },
+                    { width: DRAWER_WIDTH, transform: [{ translateX: slideAnim }] },
                 ]}
             >
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    bounces={false}
-                >
+                <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
                     {/* Header */}
                     <View style={drawerStyles.header}>
                         <View style={drawerStyles.profileSection}>
                             {user && user.photoURL ? (
-                                <Image
-                                    source={{ uri: user.photoURL }}
-                                    style={drawerStyles.profileImage}
-                                />
+                                <Image source={{ uri: user.photoURL }} style={drawerStyles.profileImage} />
                             ) : (
                                 <Image
                                     source={require('../../assets/pic.png')}
@@ -291,9 +266,7 @@ export default function CustomDrawer() {
                                 />
                             )}
                             <View style={drawerStyles.profileInfo}>
-                                <Text style={drawerStyles.userName}>
-                                    {getUserName()}
-                                </Text>
+                                <Text style={drawerStyles.userName}>{getUserName()}</Text>
                                 <Text style={drawerStyles.userEmail} numberOfLines={1}>
                                     {getUserEmail()}
                                 </Text>
@@ -312,15 +285,15 @@ export default function CustomDrawer() {
 
                     {/* Cloud Sync Section */}
                     {user && (
-                        <View style={styles.syncSection}>
-                            <View style={styles.syncHeader}>
-                                <View style={styles.syncTitleRow}>
-                                    <Ionicons 
-                                        name={syncEnabled ? "cloud-done-outline" : "cloud-offline-outline"} 
-                                        size={20} 
-                                        color={syncEnabled ? Colors.positiveColor : Colors.secondaryBlack} 
+                        <View style={drawerStyles.syncSection}>
+                            <View style={drawerStyles.syncHeader}>
+                                <View style={drawerStyles.syncTitleRow}>
+                                    <Ionicons
+                                        name={syncEnabled ? "cloud-done-outline" : "cloud-offline-outline"}
+                                        size={20}
+                                        color={syncEnabled ? Colors.positiveColor : Colors.secondaryBlack}
                                     />
-                                    <Text style={styles.syncTitle}>Cloud Sync</Text>
+                                    <Text style={drawerStyles.syncTitle}>Cloud Sync</Text>
                                 </View>
                                 <Switch
                                     value={syncEnabled}
@@ -332,32 +305,32 @@ export default function CustomDrawer() {
 
                             {syncEnabled && (
                                 <>
-                                    <View style={styles.syncStats}>
-                                        <View style={styles.statItem}>
-                                            <Text style={styles.statValue}>{syncStats.total}</Text>
-                                            <Text style={styles.statLabel}>Total</Text>
+                                    <View style={drawerStyles.syncStats}>
+                                        <View style={drawerStyles.syncStatItem}>
+                                            <Text style={drawerStyles.syncStatValue}>{syncStats.total}</Text>
+                                            <Text style={drawerStyles.syncStatLabel}>Total</Text>
                                         </View>
-                                        <View style={styles.statItem}>
-                                            <Text style={[styles.statValue, { color: Colors.positiveColor }]}>
+                                        <View style={drawerStyles.syncStatItem}>
+                                            <Text style={[drawerStyles.syncStatValue, { color: Colors.positiveColor }]}>
                                                 {syncStats.synced}
                                             </Text>
-                                            <Text style={styles.statLabel}>Synced</Text>
+                                            <Text style={drawerStyles.syncStatLabel}>Synced</Text>
                                         </View>
-                                        <View style={styles.statItem}>
-                                            <Text style={[styles.statValue, { color: '#FF9800' }]}>
+                                        <View style={drawerStyles.syncStatItem}>
+                                            <Text style={[drawerStyles.syncStatValue, { color: '#FF9800' }]}>
                                                 {syncStats.pending}
                                             </Text>
-                                            <Text style={styles.statLabel}>Pending</Text>
+                                            <Text style={drawerStyles.syncStatLabel}>Pending</Text>
                                         </View>
                                     </View>
 
-                                    <View style={styles.lastSyncRow}>
-                                        <Text style={styles.lastSyncLabel}>Last sync:</Text>
-                                        <Text style={styles.lastSyncValue}>{formatLastSync()}</Text>
+                                    <View style={drawerStyles.lastSyncRow}>
+                                        <Text style={drawerStyles.lastSyncLabel}>Last sync:</Text>
+                                        <Text style={drawerStyles.lastSyncValue}>{formatLastSync()}</Text>
                                     </View>
 
                                     <TouchableOpacity
-                                        style={styles.syncButton}
+                                        style={drawerStyles.syncButton}
                                         onPress={handleManualSync}
                                         disabled={isSyncing}
                                         activeOpacity={0.7}
@@ -367,7 +340,7 @@ export default function CustomDrawer() {
                                         ) : (
                                             <>
                                                 <Ionicons name="sync" size={16} color="#FFFFFF" />
-                                                <Text style={styles.syncButtonText}>Sync Now</Text>
+                                                <Text style={drawerStyles.syncButtonText}>Sync Now</Text>
                                             </>
                                         )}
                                     </TouchableOpacity>
@@ -375,7 +348,7 @@ export default function CustomDrawer() {
                             )}
 
                             {!syncEnabled && (
-                                <Text style={styles.syncDisabledText}>
+                                <Text style={drawerStyles.syncDisabledText}>
                                     Enable sync to backup your data to the cloud
                                 </Text>
                             )}
@@ -406,6 +379,14 @@ export default function CustomDrawer() {
 
                         {user && (
                             <>
+                                {/* Manage Profile - NEW */}
+                                <MenuItem
+                                    icon="person-circle-outline"
+                                    text="Manage Profile"
+                                    onPress={handleManageProfile}
+                                    color="#9C27B0"
+                                />
+
                                 <MenuItem
                                     icon="settings-outline"
                                     text="Settings"
@@ -413,9 +394,9 @@ export default function CustomDrawer() {
                                 />
 
                                 <MenuItem
-                                    icon="person-outline"
-                                    text="Profile"
-                                    onPress={() => handleNavigate('ComingSoon')}
+                                    icon="notifications-outline"
+                                    text="Notifications"
+                                    onPress={() => handleNavigate('Notifications')}
                                 />
                             </>
                         )}
@@ -448,7 +429,7 @@ export default function CustomDrawer() {
                     {/* Footer */}
                     <View style={drawerStyles.footer}>
                         <Text style={drawerStyles.footerText}>Day Track v1.0.0</Text>
-                        <Text style={styles.offlineModeText}>
+                        <Text style={drawerStyles.offlineModeText}>
                             {user ? (syncEnabled ? '☁️ Online Mode' : '📱 Offline Mode') : '👤 Guest Mode'}
                         </Text>
                     </View>
@@ -464,6 +445,8 @@ interface MenuItemProps {
     onPress: () => void;
     isLogout?: boolean;
     isLogin?: boolean;
+    color?: string;
+    badge?: number;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
@@ -472,10 +455,13 @@ const MenuItem: React.FC<MenuItemProps> = ({
     onPress,
     isLogout = false,
     isLogin = false,
+    color,
+    badge,
 }) => {
     const getColor = () => {
         if (isLogout) return '#FF3B30';
         if (isLogin) return '#34C759';
+        if (color) return color;
         return '#000000';
     };
 
@@ -485,114 +471,13 @@ const MenuItem: React.FC<MenuItemProps> = ({
             onPress={onPress}
             activeOpacity={0.7}
         >
-            <Ionicons
-                name={icon}
-                size={22}
-                color={getColor()}
-            />
-            <Text
-                style={[
-                    drawerStyles.menuText,
-                    { color: getColor() },
-                ]}
-            >
-                {text}
-            </Text>
+            <Ionicons name={icon as any} size={22} color={getColor()} />
+            <Text style={[drawerStyles.menuText, { color: getColor() }]}>{text}</Text>
+            {badge !== undefined && badge > 0 && (
+                <View style={drawerStyles.menuBadge}>
+                    <Text style={drawerStyles.menuBadgeText}>{badge}</Text>
+                </View>
+            )}
         </TouchableOpacity>
     );
-};
-
-const styles = {
-    syncSection: {
-        marginHorizontal: 20,
-        marginTop: 8,
-        marginBottom: 16,
-        padding: 16,
-        backgroundColor: '#F7F8FA',
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
-    },
-    syncHeader: {
-        flexDirection: 'row' as const,
-        justifyContent: 'space-between' as const,
-        alignItems: 'center' as const,
-        marginBottom: 12,
-    },
-    syncTitleRow: {
-        flexDirection: 'row' as const,
-        alignItems: 'center' as const,
-        gap: 8,
-    },
-    syncTitle: {
-        fontSize: 15,
-        fontFamily: 'YaldeviColombo-SemiBold',
-        color: Colors.primaryBlack,
-    },
-    syncStats: {
-        flexDirection: 'row' as const,
-        justifyContent: 'space-around' as const,
-        paddingVertical: 12,
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
-        marginBottom: 12,
-    },
-    statItem: {
-        alignItems: 'center' as const,
-    },
-    statValue: {
-        fontSize: 18,
-        fontFamily: 'YaldeviColombo-Bold',
-        color: Colors.primaryBlack,
-    },
-    statLabel: {
-        fontSize: 11,
-        fontFamily: 'YaldeviColombo-Regular',
-        color: Colors.secondaryBlack,
-        marginTop: 2,
-    },
-    lastSyncRow: {
-        flexDirection: 'row' as const,
-        justifyContent: 'space-between' as const,
-        marginBottom: 12,
-    },
-    lastSyncLabel: {
-        fontSize: 12,
-        fontFamily: 'YaldeviColombo-Regular',
-        color: Colors.secondaryBlack,
-    },
-    lastSyncValue: {
-        fontSize: 12,
-        fontFamily: 'YaldeviColombo-SemiBold',
-        color: Colors.primaryBlack,
-    },
-    syncButton: {
-        flexDirection: 'row' as const,
-        alignItems: 'center' as const,
-        justifyContent: 'center' as const,
-        gap: 6,
-        backgroundColor: Colors.positiveColor,
-        paddingVertical: 10,
-        borderRadius: 10,
-    },
-    syncButtonText: {
-        fontSize: 13,
-        fontFamily: 'YaldeviColombo-SemiBold',
-        color: '#FFFFFF',
-    },
-    syncDisabledText: {
-        fontSize: 12,
-        fontFamily: 'YaldeviColombo-Regular',
-        color: Colors.secondaryBlack,
-        textAlign: 'center' as const,
-        lineHeight: 18,
-    },
-    offlineModeText: {
-        fontSize: 11,
-        fontFamily: 'YaldeviColombo-Regular',
-        color: Colors.secondaryBlack,
-        marginTop: 4,
-        textAlign: 'center' as const,
-    },
 };

@@ -96,6 +96,7 @@ export interface TransactionStats {
     last7DaysExpense: number;
     last30DaysIncome: number;
     last30DaysExpense: number;
+    savingsRate: number;
 }
 
 // Default categories
